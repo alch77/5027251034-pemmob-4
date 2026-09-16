@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">Tugas Sederhana</string>
+    <string name="title_input_biodata">Form Input Biodata Mahasiswa</string>
+    <string name="subtitle_input">Silakan lengkapi data diri di bawah ini</string>
+    <string name="label_nama">Nama Lengkap</string>
+    <string name="hint_nama">Masukkan nama lengkap</string>
+    <string name="label_nrp">NRP / NIM</string>
+    <string name="hint_nrp">Masukkan NRP atau NIM</string>
+    <string name="label_jurusan">Jurusan / Program Studi</string>
+    <string name="hint_jurusan">Contoh: Teknik Informatika</string>
+    <string name="label_email">Email</string>
+    <string name="hint_email">Contoh: mahasiswa@kampus.ac.id</string>
+    <string name="label_nohp">Nomor WhatsApp / HP</string>
+    <string name="hint_nohp">Contoh: 081234567890</string>
+    <string name="label_jenis_kelamin">Jenis Kelamin</string>
+    <string name="gender_laki">Laki-laki</string>
+    <string name="gender_perempuan">Perempuan</string>
+    <string name="btn_kirim">Kirim Biodata</string>
+    <string name="title_hasil_biodata">Data Mahasiswa Berhasil Diterima</string>
+    <string name="subtitle_hasil">Berikut adalah data yang dikirim melalui Intent</string>
+    <string name="btn_kembali">Kembali ke Form Input</string>
+    <string name="btn_tutup">Tutup</string>
+    <string name="btn_tutup_app">Tutup Aplikasi</string>
+</resources>
