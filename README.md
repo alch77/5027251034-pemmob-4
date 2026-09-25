@@ -1,50 +1,61 @@
-# Aplikasi Biodata Mahasiswa (Tugas Sederhana)
+# Aplikasi Manajemen Data Mahasiswa (DBSederhana)
 
-Aplikasi Android sederhana berbasis Java untuk menginput dan menampilkan biodata mahasiswa menggunakan konsep **Explicit Intent** untuk perpindahan data antar Activity, serta mendemonstrasikan siklus hidup (*lifecycle*) Android dengan metode **`finish()`** dan **`onDestroy()`**.
+Aplikasi Android berbasis Java untuk melakukan pengelolaan data mahasiswa menggunakan basis data lokal **SQLite** (`SQLiteOpenHelper`) dan persistensi data sementara menggunakan **SharedPreferences**. Aplikasi ini mendukung operasi **CRUD (Create, Read, Update, Delete)** lengkap dengan antarmuka modern Material Design 3.
+
+---
+
+## 👤 Identitas Mahasiswa
+- **Nama:** Albert Chen
+- **NRP:** 5027251034
+- **Mata Kuliah:** Pemrograman Mobile
+- **Repository:** [5027251034-pemmob-4](https://github.com/alch77/5027251034-pemmob-4)
 
 ---
 
 ## 🌟 Fitur Utama
 
-1. **Form Input Biodata Lengkap:**
-   - **NRP / NIM:** Input nomor identitas mahasiswa.
-   - **Nama Lengkap:** Input nama mahasiswa dengan format kapitalisasi otomatis.
-   - **Jurusan / Program Studi:** Input program studi mahasiswa.
-   - **Email:** Input alamat email dengan tipe keyboard email.
-   - **Nomor WhatsApp / HP:** Input nomor telepon dengan tipe keyboard numerik.
-   - **Jenis Kelamin:** Pilihan radio button (Laki-laki / Perempuan).
+1. **Tambah / Simpan Data (Create):**
+   - Menginput NRP dan Nama mahasiswa, kemudian menyimpannya ke dalam database SQLite (`mhs.db` pada tabel `mhs`).
+   - Validasi duplikasi: Mencegah penyimpanan jika NRP yang sama sudah terdaftar (NRP sebagai Primary Key).
 
-2. **Pengiriman Data Menggunakan Explicit Intent:**
-   - Berpindah dari `MainActivity` ke `SecondActivity` secara eksplisit (`new Intent(MainActivity.this, SecondActivity.class)`).
-   - Mengirim seluruh data melalui `putExtra()` dan diterima kembali di `SecondActivity` melalui `getStringExtra()`.
+2. **Cari Data Mahasiswa (Read):**
+   - Mencari data nama mahasiswa berdasarkan NRP yang dimasukkan.
+   - Menggunakan kueri `rawQuery` dengan parameterisasi untuk keamanan data.
 
-3. **Tampilan Kartu Informasi (Material Card):**
-   - Halaman kedua (`SecondActivity`) menampilkan data yang diterima dalam bentuk kartu (*card*) berdesain rapi dan terstruktur.
+3. **Penyimpanan Riwayat Otomatis (SharedPreferences):**
+   - NRP pencarian terakhir secara otomatis disimpan ke dalam `SharedPreferences` (`MhsPrefs`).
+   - Saat aplikasi pertama kali dibuka (`onCreate`), NRP terakhir akan langsung dimuat ke kolom input dan datanya otomatis dicari serta ditampilkan.
 
-4. **Validasi Form:**
-   - Validasi interaktif yang menampilkan pesan error dan fokus langsung ke kolom yang belum diisi (Nama, NRP, dan Jurusan wajib diisi).
+4. **Perbarui Data (Update):**
+   - Mengubah nama mahasiswa berdasarkan NRP yang tersimpan di dalam database menggunakan metode `update()`.
 
-5. **Kenyamanan Input (High Contrast UI):**
-   - Teks ketikan, garis outline saat kolom aktif/fokus (*focused state*), serta floating hint dirancang berwarna hitam pekat (`#000000`) agar jelas dan mudah dibaca.
+5. **Hapus Data (Delete):**
+   - Menghapus data mahasiswa dari database SQLite berdasarkan NRP.
+   - Sekaligus membersihkan cache riwayat pencarian pada `SharedPreferences`.
 
-6. **Tombol "Tutup" dengan Siklus Hidup `finish()` & `onDestroy()`:**
-   - Menyediakan tombol **"Tutup"** pada `SecondActivity` yang memanggil fungsi `finish()` untuk mengakhiri activity dan kembali ke halaman utama.
-   - Menimpa (*override*) method `onDestroy()` untuk menampilkan indikator Toast saat Activity dihancurkan dari memori.
-   - Tersedia juga tombol **"Tutup Aplikasi"** pada `MainActivity` dengan mekanisme yang sama untuk menutup aplikasi.
+6. **Validasi Input Interaktif:**
+   - Kolom NRP dan Nama dilengkapi validasi: menampilkan pesan error visual (`setError`) dan fokus kursor jika ada kolom wajib yang kosong.
+   - Notifikasi interaktif menggunakan `Toast` untuk setiap status operasi (berhasil/gagal).
+
+7. **Tombol "Tutup" & Manajemen Siklus Hidup (*Lifecycle*):**
+   - Menyediakan tombol **"Tutup"** dengan pemanggilan metode `finish()`.
+   - Menimpa (*override*) callback `onDestroy()` untuk menampilkan notifikasi penutupan activity secara bersih.
 
 ---
 
 ## 🛠 Spesifikasi & Teknologi
 
-| Komponen | Spesifikasi / Versi |
+| Komponen | Spesifikasi / Keterangan |
 | :--- | :--- |
 | **Platform** | Android |
-| **Bahasa Pemrograman** | Java (Java 11) |
+| **Bahasa Pemrograman** | Java (Java 11 / `VERSION_11`) |
 | **Min SDK** | API 24 (Android 7.0 Nougat) |
 | **Target & Compile SDK** | API 37 |
+| **Database Lokal** | SQLite (melalui `SQLiteOpenHelper`) |
+| **Penyimpanan Key-Value** | Android `SharedPreferences` |
 | **Build System** | Gradle 9.5.0 |
 | **Android Gradle Plugin (AGP)** | 9.3.2 |
-| **UI Components** | Google Material Design 3 (`com.google.android.material:material:1.14.0`) |
+| **Komponen UI** | Google Material Design 3 (`com.google.android.material:material:1.14.0`) |
 | **Library Pendukung** | AndroidX AppCompat (`1.8.0`), ConstraintLayout (`2.2.2`), Activity KTX (`1.13.0`) |
 | **Unit Testing** | JUnit 4 (`4.13.2`) |
 
@@ -58,30 +69,48 @@ TugasSederhana/
 │   ├── src/
 │   │   ├── main/
 │   │   │   ├── java/com/example/tugassederhana/
-│   │   │   │   ├── MainActivity.java        # Activity utama: form input & Explicit Intent
-│   │   │   │   └── SecondActivity.java      # Activity kedua: penampil data & tombol Tutup
+│   │   │   │   ├── DatabaseHelper.java      # Pengelola database SQLite (Tabel mhs, CRUD)
+│   │   │   │   └── SecondActivity.java      # Activity utama: UI CRUD, SharedPreferences, Lifecycle
 │   │   │   ├── res/
 │   │   │   │   ├── color/
-│   │   │   │   │   ├── box_stroke_color.xml # Selector warna border saat fokus (hitam)
-│   │   │   │   │   └── box_hint_color.xml   # Selector warna hint saat fokus (hitam)
+│   │   │   │   │   ├── box_stroke_color.xml # Selector warna outline form fokus (hitam)
+│   │   │   │   │   └── box_hint_color.xml   # Selector warna hint form fokus (hitam)
 │   │   │   │   ├── layout/
-│   │   │   │   │   ├── activity_main.xml    # Layout form input biodata
-│   │   │   │   │   └── activity_second.xml  # Layout tampilan biodata & tombol Tutup
+│   │   │   │   │   └── activity_second.xml  # Antarmuka form input, tombol CRUD, & tombol Tutup
 │   │   │   │   └── values/
-│   │   │   │       ├── colors.xml           # Definisi palet warna
-│   │   │   │       ├── strings.xml          # Definisi teks & label
-│   │   │   │       └── themes.xml           # Tema Material3 aplikasi
-│   │   │   └── AndroidManifest.xml          # Pendaftaran MainActivity & SecondActivity
+│   │   │   │       ├── colors.xml           # Definisi palet warna Material
+│   │   │   │       ├── strings.xml          # Definisi string teks dan label
+│   │   │   │       └── themes.xml           # Tema Material 3 aplikasi
+│   │   │   └── AndroidManifest.xml          # Konfigurasi manifest & registrasi SecondActivity
 │   │   └── test/
 │   │       └── java/com/example/tugassederhana/
-│   │           └── ExampleUnitTest.java     # Pengujian unit (Unit Test)
-│   └── build.gradle.kts                     # Konfigurasi dependensi modul app
+│   │           └── ExampleUnitTest.java     # Pengujian unit lokal (Unit Test)
+│   └── build.gradle.kts                     # Dependensi modul aplikasi
 ├── gradle/
-│   └── libs.versions.toml                   # Version catalog Gradle
-├── build.gradle.kts                         # Konfigurasi root project
-├── gradlew.bat                              # Script Gradle wrapper (Windows)
-└── README.md                                # Dokumentasi proyek
+│   └── libs.versions.toml                   # Version catalog dependencies
+├── build.gradle.kts                         # Konfigurasi root project Gradle
+├── gradlew.bat                              # Script Gradle Wrapper (Windows)
+└── README.md                                # Dokumentasi lengkap proyek
 ```
+
+---
+
+## 🗄 Skema Database SQLite
+
+Basis data diberi nama **`mhs.db`** dengan tabel utama **`mhs`**:
+
+```sql
+CREATE TABLE mhs (
+    nrp TEXT PRIMARY KEY,
+    nama TEXT
+);
+```
+
+### Operasi Database (`DatabaseHelper.java`):
+- `insertData(String nrp, String nama)`: Menambahkan data mahasiswa baru.
+- `getData(String nrp)`: Mengambil data mahasiswa berdasarkan NRP menggunakan kueri `SELECT * FROM mhs WHERE nrp = ?`.
+- `updateData(String nrp, String nama)`: Memperbarui kolom nama mahasiswa berdasarkan NRP.
+- `deleteData(String nrp)`: Menghapus baris data mahasiswa berdasarkan NRP.
 
 ---
 
@@ -89,32 +118,32 @@ TugasSederhana/
 
 ### Opsi 1: Menggunakan Android Studio (Direkomendasikan)
 1. Buka aplikasi **Android Studio**.
-2. Pilih menu **File** > **Open**, lalu arahkan ke direktori proyek:
+2. Pilih menu **File** > **Open**, lalu pilih direktori proyek:
    ```text
    d:\TugasSederhana
    ```
-3. Tunggu proses *Gradle Sync* selesai.
-4. Hubungkan perangkat fisik Android melalui USB (aktifkan *USB Debugging*) atau jalankan **Android Emulator (AVD)**.
-5. Klik tombol **Run 'app'** (ikon segitiga hijau `▶`) atau tekan pintasan `Shift + F10`.
-6. Aplikasi akan terpasang dan terbuka di perangkat Anda.
+3. Tunggu hingga proses *Gradle Sync* dan indeks selesai.
+4. Hubungkan perangkat fisik Android melalui kabel USB (pastikan *USB Debugging* aktif) atau jalankan **Android Emulator (AVD)**.
+5. Klik tombol **Run 'app'** (ikon segitiga hijau `▶`) atau gunakan pintasan `Shift + F10`.
+6. Aplikasi akan terkompilasi, terpasang, dan langsung terbuka di layar perangkat.
 
 ### Opsi 2: Menggunakan Terminal / Command Line
-Anda dapat mengompilasi dan menghasilkan file APK menggunakan Gradle Wrapper:
+Anda dapat mengompilasi dan membangun file APK langsung melalui Gradle Wrapper:
 
 ```powershell
-# Pastikan JAVA_HOME telah terpasang (misal menggunakan JDK bawaan Android Studio)
+# Atur JAVA_HOME ke JDK Android Studio
 $env:JAVA_HOME="C:\Program Files\Android\Android Studio\jbr"
 
 # Build file APK Debug
 .\gradlew.bat assembleDebug
 ```
 
-Setelah proses selesai, file APK siap diinstal dan berlokasi di:
+File APK yang siap diinstal akan terbentuk pada direktori:
 ```text
 app/build/outputs/apk/debug/app-debug.apk
 ```
 
-Untuk langsung memasang (*install*) ke perangkat/emulator yang sedang terhubung:
+Untuk langsung memasang (*install*) APK ke perangkat/emulator yang terhubung:
 ```powershell
 .\gradlew.bat installDebug
 ```
@@ -123,31 +152,31 @@ Untuk langsung memasang (*install*) ke perangkat/emulator yang sedang terhubung:
 
 ## 🧪 Pengujian Unit (Unit Test)
 
-Proyek ini dilengkapi dengan unit test berbasis **JUnit 4** di file [`ExampleUnitTest.java`](app/src/test/java/com/example/tugassederhana/ExampleUnitTest.java) untuk memvalidasi logika aplikasi tanpa memerlukan perangkat emulator.
+Pengujian unit dilakukan secara lokal menggunakan **JUnit 4** pada file [`ExampleUnitTest.java`](app/src/test/java/com/example/tugassederhana/ExampleUnitTest.java) tanpa memerlukan emulator/device fisik.
 
-### Skenario Pengujian yang Diuji:
-- `testValidasiNama_TidakBolehKosong`: Memastikan input nama yang kosong terdeteksi dan input yang valid diterima.
-- `testValidasiNRP_HarusSesuai`: Memastikan input NRP memiliki nilai dan panjang yang sesuai.
-- `testValidasiEmail_Format`: Menguji pola ekspresi reguler (*regex*) format alamat email.
-- `testNilaiDefault_FieldKosong`: Memastikan nilai default `"-"` terpasang saat field opsional kosong.
+### Skenario Pengujian:
+1. `addition_isCorrect`: Memverifikasi lingkungan eksekusi pengujian dasar.
+2. `testDatabaseConstants`: Memvalidasi nama tabel (`mhs`), kolom NRP (`nrp`), dan kolom Nama (`nama`) pada `DatabaseHelper`.
+3. `testValidasiNRP_TidakBolehKosong`: Memverifikasi validasi input NRP terhadap kondisi string kosong dan panjang karakter.
+4. `testValidasiNama_TidakBolehKosong`: Memverifikasi validasi nama tidak boleh hanya berisi spasi kosong (*whitespace*).
+5. `testKueriSqliteQueryBuilder`: Memverifikasi sintaks kueri SQL pencarian data mahasiswa.
 
 ### Cara Menjalankan Unit Test:
 
 #### Melalui Terminal:
-Jalankan perintah berikut di folder proyek:
 ```powershell
 $env:JAVA_HOME="C:\Program Files\Android\Android Studio\jbr"
 .\gradlew.bat testDebugUnitTest
 ```
 
-Laporan hasil pengujian dalam format HTML interaktif dapat dilihat di:
+Laporan hasil pengujian dalam format visual HTML interaktif dapat diakses pada:
 ```text
 app/build/reports/tests/testDebugUnitTest/index.html
 ```
 
 #### Melalui Android Studio:
-1. Di panel *Project*, buka folder `app` > `src` > `test` > `java` > `com.example.tugassederhana`.
+1. Di panel navigasi *Project*, buka folder `app` > `src` > `test` > `java` > `com.example.tugassederhana`.
 2. Klik kanan pada file `ExampleUnitTest.java`.
-3. Pilih menu **Run 'ExampleUnitTest'**.
-4. Hasil pengujian (*Passed / Failed*) akan muncul di panel *Run* di bagian bawah.
+3. Pilih opsi **Run 'ExampleUnitTest'**.
+4. Hasil status pengujian (semua centang hijau *Passed*) akan ditampilkan pada panel *Run* di bagian bawah.
 
