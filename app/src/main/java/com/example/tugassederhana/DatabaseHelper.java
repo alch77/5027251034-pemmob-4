@@ -48,6 +48,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE " + COL_NRP + " = ?", new String[]{nrp});
     }
 
+    // Mengambil semua data untuk ditampilkan di tabel
+    public Cursor getAllData() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        return db.rawQuery("SELECT * FROM " + TABLE_NAME, null);
+    }
+
     // Update Data berdasarkan NRP
     public boolean updateData(String nrp, String nama) {
         SQLiteDatabase db = this.getWritableDatabase();

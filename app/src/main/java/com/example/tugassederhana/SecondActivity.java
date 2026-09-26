@@ -3,8 +3,11 @@ package com.example.tugassederhana;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,6 +16,7 @@ public class SecondActivity extends AppCompatActivity {
 
     EditText edtNrp, edtNama;
     Button btnSimpan, btnCari, btnUpdate, btnHapus, btnTutup;
+    LinearLayout containerTableRows;
     DatabaseHelper dbHelper;
     SharedPreferences sharedPreferences;
 
@@ -36,6 +40,7 @@ public class SecondActivity extends AppCompatActivity {
         btnUpdate = findViewById(R.id.btnUpdate);
         btnHapus = findViewById(R.id.btnHapus);
         btnTutup = findViewById(R.id.btnTutup);
+        containerTableRows = findViewById(R.id.containerTableRows);
 
         // Memuat NRP terakhir yang dicari secara otomatis dari SharedPreferences ke EditText nrp saat onCreate()
         String lastNrp = sharedPreferences.getString(KEY_LAST_NRP, "");
@@ -44,6 +49,9 @@ public class SecondActivity extends AppCompatActivity {
             // Cari otomatis data jika NRP terakhir ada
             loadDataByNrp(lastNrp, false);
         }
+
+        // Muat data tabel mahasiswa saat pertama kali dibuka
+        loadTableData();
 
         // Operasi 1: SIMPAN (Insert)
         btnSimpan.setOnClickListener(v -> {
@@ -64,6 +72,7 @@ public class SecondActivity extends AppCompatActivity {
             boolean isInserted = dbHelper.insertData(nrp, nama);
             if (isInserted) {
                 Toast.makeText(this, "Data mahasiswa berhasil disimpan", Toast.LENGTH_SHORT).show();
+                loadTableData();
             } else {
                 Toast.makeText(this, "Gagal menyimpan: NRP sudah terdaftar atau terjadi kesalahan", Toast.LENGTH_SHORT).show();
             }
@@ -106,6 +115,7 @@ public class SecondActivity extends AppCompatActivity {
             boolean isUpdated = dbHelper.updateData(nrp, nama);
             if (isUpdated) {
                 Toast.makeText(this, "Data mahasiswa berhasil diupdate", Toast.LENGTH_SHORT).show();
+                loadTableData();
             } else {
                 Toast.makeText(this, "Gagal update: NRP tidak ditemukan di database", Toast.LENGTH_SHORT).show();
             }
@@ -127,8 +137,8 @@ public class SecondActivity extends AppCompatActivity {
                 Toast.makeText(this, "Data mahasiswa berhasil dihapus", Toast.LENGTH_SHORT).show();
                 edtNrp.setText("");
                 edtNama.setText("");
-                // Hapus juga dari SharedPreferences jika perlu atau biarkan
                 sharedPreferences.edit().remove(KEY_LAST_NRP).apply();
+                loadTableData();
             } else {
                 Toast.makeText(this, "Gagal menghapus: NRP tidak ditemukan", Toast.LENGTH_SHORT).show();
             }
@@ -155,6 +165,46 @@ public class SecondActivity extends AppCompatActivity {
             if (showToast) {
                 Toast.makeText(this, "Data tidak ditemukan untuk NRP: " + nrp, Toast.LENGTH_SHORT).show();
             }
+        }
+    }
+
+    private void loadTableData() {
+        containerTableRows.removeAllViews();
+        Cursor cursor = dbHelper.getAllData();
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                int nrpIdx = cursor.getColumnIndex(DatabaseHelper.COL_NRP);
+                int namaIdx = cursor.getColumnIndex(DatabaseHelper.COL_NAMA);
+                String nrp = nrpIdx != -1 ? cursor.getString(nrpIdx) : "";
+                String nama = namaIdx != -1 ? cursor.getString(namaIdx) : "";
+
+                View rowView = getLayoutInflater().inflate(R.layout.item_table_row, containerTableRows, false);
+                TextView txtRowNrp = rowView.findViewById(R.id.txtRowNrp);
+                TextView txtRowNama = rowView.findViewById(R.id.txtRowNama);
+
+                txtRowNrp.setText(nrp);
+                txtRowNama.setText(nama);
+
+                // Saat baris tabel diklik, otomatis isi form di atas
+                rowView.setOnClickListener(v -> {
+                    edtNrp.setText(nrp);
+                    edtNama.setText(nama);
+                    Toast.makeText(this, "Dipilih: " + nrp + " - " + nama, Toast.LENGTH_SHORT).show();
+                });
+
+                containerTableRows.addView(rowView);
+            } while (cursor.moveToNext());
+            cursor.close();
+        } else {
+            if (cursor != null) {
+                cursor.close();
+            }
+            // Tampilkan pesan kosong jika belum ada data
+            TextView emptyView = new TextView(this);
+            emptyView.setText("Belum ada data mahasiswa.");
+            emptyView.setTextColor(getResources().getColor(android.R.color.darker_gray, null));
+            emptyView.setPadding(10, 10, 10, 10);
+            containerTableRows.addView(emptyView);
         }
     }
 
