@@ -362,5 +362,3 @@ app/build/reports/tests/testDebugUnitTest/index.html
 2. Klik kanan pada file `ExampleUnitTest.java`.
 3. Pilih opsi **Run 'ExampleUnitTest'**.
 4. Hasil status pengujian (semua centang hijau *Passed*) akan ditampilkan pada panel *Run* di bagian bawah.
-
->>>>>>> 4e17447 (tugas 4)
