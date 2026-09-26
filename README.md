@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Aplikasi Manajemen Data Mahasiswa (DBSederhana)
 
 Aplikasi Android berbasis Java untuk melakukan pengelolaan data mahasiswa menggunakan basis data lokal **SQLite** (`SQLiteOpenHelper`) dan persistensi data sementara menggunakan **SharedPreferences**. Aplikasi ini mendukung operasi **CRUD (Create, Read, Update, Delete)** lengkap dengan antarmuka modern Material Design 3.
